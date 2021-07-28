@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: radial-gradient(#404749, #404749 85%, #313636);
+      height: 100vh;
+    }
+    .shirt {
+      /* 衣服的盒子整体在浏览器中居中 */
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 400px;
+      /* 让元素向自己左侧上侧走自身的一半宽度和高度 */
+      transform: translate(-50%, -50%);
+    }
+    .shirt-base {
+      display: block;
+      /* 更改图片的尺寸与父盒子一样宽，并且自动撑高父级 */
+      width: 400px;
+    }
+    .shirt-overlay {
+      /* 一定要跟上面的图片在相同位置 */
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .shirt-overlay-pattern {
+      width: 100%;
+      height: 100%;
+      /* 添加背景图，使用 js 动态添加 */
+      background: url(images/swatch1-preview.jpg);
+      /* 添加背景的遮罩，只会让图片中的黑色区域显示，透明区域不显示 */
+      mask-image: url(images/shirt-mask.png);
+      /* 有兼容问题，需要加前缀 */
+      -webkit-mask-image: url(images/shirt-mask.png);
+      /* 设置遮盖图片跟衣服一样大 */
+      mask-size: contain;
+      -webkit-mask-size: contain;
+    }
+    .shirt-overlay-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      /* 本层图片和下层父级的内容混合的模式 */
+      /* 正片叠底的混合效果 */
+      mix-blend-mode: multiply;
+    } 
+
+    /* 设置按钮组 */
+    .textiles {
+      position: fixed;      
+    }
+    .textiles-1 {
+      left: 100px;
+      top: 100px;
+    }
+    .textiles-2 {
+      right: 100px;
+      bottom: 100px;
+    }
+    .textiles-button {
+      position: absolute;      
+      width: 50px;
+      height: 50px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .textiles-1 .textiles-button {
+      left: 0;
+      top: 0;
+      /* 更改旋转的圆心位置 */
+      transform-origin: 100px 100px;
+    }
+    .textiles-1 .textiles-button:nth-child(1) {
+      transform: rotate(-80deg);
+    }
+    .textiles-1 .textiles-button:nth-child(2) {
+      transform: rotate(-40deg);
+    }
+    .textiles-1 .textiles-button:nth-child(3) {
+      transform: rotate(0deg);
+    }
+    .textiles-1 .textiles-button:nth-child(4) {
+      transform: rotate(40deg);
+    }
+    .textiles-2 .textiles-button {
+      right: 0;
+      bottom: 0;
+      transform-origin: -50px -50px;
+    }
+    .textiles-2 .textiles-button:nth-child(1) {
+      transform: rotate(-80deg);
+    }
+    .textiles-2 .textiles-button:nth-child(2) {
+      transform: rotate(-40deg);
+    }
+    .textiles-2 .textiles-button:nth-child(3) {
+      transform: rotate(0deg);
+    }
+    .textiles-2 .textiles-button:nth-child(4) {
+      transform: rotate(40deg);
+    }
+    /* 设置鼠标移上按钮，或者选中按钮，边框颜色为红色 */
+    .textiles-button:hover,
+    .textiles-button.active {
+      border-color: #f00;
+    }
+  </style>
+</head>
+<body>
+  <div class="shirt">
+    <!-- 带着衣架的图片 -->
+    <img src="images/t-shirt.png" class="shirt-base" alt="">
+    <!-- 覆盖在衣服之上，只需要有衣服的范围，不需要其他内容，比如衣架 -->
+    <div class="shirt-overlay">
+      <!-- 用来制作添加的图案，只能有衣服的范围 -->
+      <div class="shirt-overlay-pattern"></div>
+      <!-- 保留衣服纹理的半透明图片 -->
+      <img src="images/t-shirt-overlay-70c.png" class="shirt-overlay-shape" alt="">
+    </div>
+  </div>
+  <!-- 两组按钮 -->
+  <div class="textiles textiles-1">
+    <button class="textiles-button active"></button>
+    <button class="textiles-button">
+      <img src="images/swatch1-preview.jpg" alt="">
+    </button>
+    <button class="textiles-button">
+      <img src="images/swatch2-preview.jpg" alt="">
+    </button>
+    <button class="textiles-button">
+      <img src="images/swatch3-preview.jpg" alt="">
+    </button>
+  </div>
+  <div class="textiles textiles-2">
+    <button class="textiles-button">
+      <img src="images/swatch4-preview.jpg" alt="">
+    </button>
+    <button class="textiles-button">
+      <img src="images/swatch5-preview.jpg" alt="">
+    </button>
+    <button class="textiles-button">
+      <img src="images/swatch6-preview.jpg" alt="">
+    </button>
+    <button class="textiles-button">
+      <img src="images/swatch7-preview.jpg" alt="">
+    </button>
+  </div>
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <script>
+    // 选择元素
+    var $shirtPattern = $('.shirt-overlay-pattern');
+    // 批量选中所有的按钮
+    var $buttons = $('.textiles-button');
+    var pattern = '';
+    // 给按钮批量添加事件
+    $buttons.click(function () {
+      // 其他人去掉 active 类名
+      $buttons.removeClass('active');
+      // 点击谁，让它添加一个 active 类名
+      $(this).addClass('active');
+      // 让点击的这个元素内部的 img 标签的src 属性值，作为背景图片
+      pattern = $(this).find('img').attr('src');
+      // 实现元素淡入淡出切换，当前的图先淡出，然后换完背景的再淡入
+      $shirtPattern.fadeOut('fast',function () {
+        $shirtPattern.css('background-image','url('+pattern+')')
+        $shirtPattern.fadeIn('fast')
+      })
+    });
+  </script>
+</body>
+</html>
